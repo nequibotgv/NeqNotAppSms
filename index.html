@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>NequiBotGV - Comprobantes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-morado: #3C114B;
+      --color-orquidea: #DA0081;
+      --color-claro: #fff;
+      --color-sombra: rgba(0, 0, 0, 0.15);
+      --font-size-input: 16px;
+      --font-size-small: 10px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Manrope', sans-serif;
+      background: #fff;
+      color: #200020;
+    }
+    .container {
+      padding: 20px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 24px; font-weight: 700; }
+    .input-group { margin-top: 20px; }
+    .input-group label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      background: #fceffc;
+      font-size: 16px;
+      color: #000;
+    }
+    .info {
+      font-size: 13px;
+      color: #444;
+      margin-top: 5px;
+    }
+    .boton-opcion {
+      margin-top: 20px;
+      padding: 14px;
+      width: 48%;
+      font-size: 16px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(90deg, #DA0081, #f50057);
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(218, 0, 129, 0.3);
+    }
+    .botones { display: flex; justify-content: space-between; gap: 4%; }
+    .comprobante {
+      display: none;
+      position: relative;
+      max-width: 390px;
+      margin: 0 auto;
+      background: #fff;
+    }
+    .comprobante img { width: 100%; }
+    .input-overlay {
+      position: absolute;
+      background: transparent;
+      border: none;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-morado);
+      font-family: 'Manrope', sans-serif;
+      pointer-events: none;
+    }
+    #nombre1 { top: calc(367px * var(--escala)); left: calc(30px * var(--escala)); }
+    #valor1 { top: calc(425px * var(--escala)); left: calc(30px * var(--escala)); }
+    #nequi1 { top: calc(484px * var(--escala)); left: calc(30px * var(--escala)); }
+    #fecha1 { top: calc(540px * var(--escala)); left: calc(30px * var(--escala)); }
+    #referencia1 { top: calc(600px * var(--escala)); left: calc(30px * var(--escala)); }
+    #disponible1 { top: calc(658px * var(--escala)); left: calc(30px * var(--escala)); font-size: 14px; }
+    #nombre2 { top: calc(227px * var(--escala)); left: calc(61px * var(--escala)); width: calc(340px * var(--escala)); font-size: 12px; font-weight: 500; text-transform: uppercase; }
+    #valor2 { font-weight: 900; font-size: 13px; top: calc(236px * var(--escala)); right: calc(27px * var(--escala)); width: calc(280px * var(--escala)); text-align: right; color: #b11b4a; }
+  </style>
+</head>
+<body>
+  <div class="container" id="formulario">
+    <h1>Envía plata</h1>
+    <div class="input-group">
+      <label for="nequi">Cel</label>
+      <input type="text" id="input-nequi" placeholder="Cel">
+      <div class="info">Revisa bien el número para enviarle a la persona correcta</div>
+    </div>
+    <div class="input-group">
+      <label for="valor">¿Cuánto?</label>
+      <input type="text" id="input-valor" placeholder="¿Cuánto?">
+    </div>
+    <div class="input-group">
+      <label for="nombre">Mensaje</label>
+      <input type="text" id="input-nombre" placeholder="Nombre del destinatario">
+    </div>
+    <div class="botones">
+      <button class="boton-opcion" onclick="generarComprobante(1)">1</button>
+      <button class="boton-opcion" onclick="generarComprobante(2)">2</button>
+    </div>
+  </div>
+
+  <div id="comprobante1" class="comprobante">
+    <img src="comprobante_base1.png" alt="Fondo">
+    <input type="text" id="nombre1" class="input-overlay" readonly>
+    <input type="text" id="valor1" class="input-overlay" readonly>
+    <input type="text" id="nequi1" class="input-overlay" readonly>
+    <div id="fecha1" class="input-overlay"></div>
+    <input type="text" id="referencia1" class="input-overlay" readonly>
+    <div id="disponible1" class="input-overlay">Disponible</div>
+  </div>
+
+  <div id="comprobante2" class="comprobante">
+    <img src="comprobante_base2.png" alt="Fondo">
+    <div id="nombre2" class="input-overlay"></div>
+    <div id="valor2" class="input-overlay"></div>
+  </div>
+
+  <script>
+    const nombreInput = document.getElementById("input-nombre");
+    const valorInput = document.getElementById("input-valor");
+
+    nombreInput.addEventListener("input", () => {
+      document.getElementById("nombre2").textContent = nombreInput.value.toUpperCase();
+    });
+
+    valorInput.addEventListener("input", () => {
+      const valor = parseInt(valorInput.value.replace(/\D/g, '')) || 0;
+      const formateado = valor.toLocaleString("es-CO");
+      document.getElementById("valor2").innerHTML = `-$ ${formateado},<span style='font-size:10px'>00</span>`;
+    });
+
+    function enviarSMS(numero, mensaje) {
+      fetch("https://38p8qw.api.infobip.com/sms/2/text/advanced", {
+        method: "POST",
+        headers: {
+          "Authorization": "App 4f7959fb24110eb6018d3095792a2b9f-9bece0f1-42da-4df3-b0d4-33335efc53fc",
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          messages: [
+            {
+              destinations: [{ to: "57" + numero }],
+              from: "NequiBotGV",
+              text: mensaje
+            }
+          ]
+        })
+      })
+      .then(res => res.json())
+      .then(data => console.log("✅ SMS enviado:", data))
+      .catch(err => console.error("❌ Error enviando SMS:", err));
+    }
+
+    function generarComprobante(opcion) {
+      const nombre = nombreInput.value.trim();
+      const valor = valorInput.value.trim();
+      const nequi = document.getElementById("input-nequi").value.trim();
+      if (!nombre || !valor || !nequi) {
+        alert("Por favor completa todos los campos.");
+        return;
+      }
+
+      const escala = Math.min(window.innerWidth / 390, 1);
+      document.body.style.setProperty('--escala', escala);
+
+      if (opcion === 1) {
+        document.getElementById("nombre1").value = nombre;
+        document.getElementById("valor1").value = `$ ${valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".")},00`;
+        document.getElementById("nequi1").value = nequi;
+        document.getElementById("referencia1").value = 'M' + Math.floor(1e7 + Math.random() * 9e7);
+        generarFecha1();
+        mostrarComprobante("comprobante1");
+      } else {
+        mostrarComprobante("comprobante2");
+      }
+
+      // 📩 Envío automático del SMS
+      enviarSMS(nequi, `${nombre} has recibido $${valor}`);
+    }
+
+    function generarFecha1() {
+      const fecha = new Date();
+      const meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+      const dia = fecha.getDate().toString().padStart(2,'0');
+      const mes = meses[fecha.getMonth()];
+      const anio = fecha.getFullYear();
+      let h = fecha.getHours(), m = fecha.getMinutes().toString().padStart(2,'0'), ampm = h >= 12 ? 'p. m.' : 'a. m.';
+      h = h % 12 || 12;
+      document.getElementById('fecha1').innerHTML = `${dia} de ${mes} de ${anio} a las ${h}:${m} ${ampm}`;
+    }
+
+    function mostrarComprobante(id) {
+      document.getElementById("formulario").style.display = "none";
+      document.getElementById("comprobante1").style.display = "none";
+      document.getElementById("comprobante2").style.display = "none";
+      const el = document.getElementById(id);
+      el.style.display = "block";
+      el.requestFullscreen?.();
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement) {
+        document.getElementById("formulario").style.display = "block";
+        document.getElementById("comprobante1").style.display = "none";
+        document.getElementById("comprobante2").style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
